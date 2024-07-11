@@ -15,7 +15,7 @@ var (
 func main() {
 	folderFlag := flag.Bool("f", false, "Only show folders")
 	showHiddenFlag := flag.Bool("a", false, "Show hidden folders")
-	depthFlag := flag.Int("d", 0, "Depth of the tree")
+	depthFlag := flag.Int("d", 100, "Depth of the tree")
 
 	flag.Parse()
 	ShowHidden = *showHiddenFlag
@@ -36,17 +36,19 @@ func main() {
 }
 
 func tree(path string, depth int, showFiles bool) {
-	if depth <= Depth {
-		listDir, err := os.ReadDir(path)
-		if err != nil {
-			panic(err)
-		}
-		for i := 0; i < len(listDir); i++ {
-			if listDir[i].IsDir() {
-				hidden := _printFolder(listDir[i], depth)
-				tree(path+"/"+listDir[i].Name(), depth+1, hidden)
-			} else if showFiles {
-				_printFile(listDir[i], depth)
+	if showFiles {
+		if depth <= Depth {
+			listDir, err := os.ReadDir(path)
+			if err != nil {
+				panic(err)
+			}
+			for i := 0; i < len(listDir); i++ {
+				if listDir[i].IsDir() {
+					hidden := _printFolder(listDir[i], depth)
+					tree(path+"/"+listDir[i].Name(), depth+1, hidden)
+				} else if showFiles {
+					_printFile(listDir[i], depth)
+				}
 			}
 		}
 	}
